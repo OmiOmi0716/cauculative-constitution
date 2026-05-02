@@ -1,0 +1,20 @@
+[project]
+name = "ethiccaculate"
+version = "0.1.0"
+description = "Executable v0.1 implementation of the Omega ethics audit whitepaper"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "Tzuxuan Huang" },
+]
+
+[project.scripts]
+ethiccaculate-demo = "ethiccaculate.demo:main"
+ethiccaculate-score = "ethiccaculate.scoring:main"
+ethiccaculate-runtime-smoke = "ethiccaculate.runtime_smoke:main"
+ethiccaculate-truthfulqa-mini = "ethiccaculate.truthfulqa_mini:main"
+ethiccaculate-bbq-mini = "ethiccaculate.bbq_mini:main"
+ethiccaculate-ablation = "ethiccaculate.ablation:main"
+ethiccaculate-comparative-audit = "ethiccaculate.comparative_audit:main"
+ethiccaculate-comparative-baseline = "ethiccaculate.comparative_baseline:main"
+ethiccaculate-core128 = "ethiccaculate.core128:main"
