@@ -105,6 +105,21 @@ from .bbq_mini import (
     build_bbq_mini_suite,
     write_bbq_outputs,
 )
+from .formula import (
+    FORMULA_REFERENCE,
+    FormulaPipelineResult,
+    demo_pipeline,
+    get_formula_reference,
+    run_ethics_pipeline,
+)
+from .text_ethics import (
+    QuickEthicsReport,
+    TextAnalysis,
+    analyze_text,
+    analysis_to_bcg_profile,
+    batch_audit_texts,
+    quick_ethics_audit,
+)
 from .spectral import ScalarizerConfig, scalarize, spectral_from_blocks
 from .six_axes import (
     AXIS_ORDER,
@@ -279,6 +294,19 @@ __all__ = [
     "write_truthfulqa_outputs",
     "ABLATION_MODES",
     "CORE_CLAIM",
+    # formula pipeline
+    "FORMULA_REFERENCE",
+    "FormulaPipelineResult",
+    "demo_pipeline",
+    "get_formula_reference",
+    "run_ethics_pipeline",
+    # text-to-ethics
+    "QuickEthicsReport",
+    "TextAnalysis",
+    "analyze_text",
+    "analysis_to_bcg_profile",
+    "batch_audit_texts",
+    "quick_ethics_audit",
 ]
 
 _LAZY_COMPARATIVE_EXPORTS = {
