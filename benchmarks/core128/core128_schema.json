@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ethiccaculate.local/benchmarks/core128/core128_schema.json",
+  "title": "Ethics-Audit-Core-128 v0.1",
+  "type": "object",
+  "required": [
+    "benchmark_id",
+    "version",
+    "format_version",
+    "name",
+    "description",
+    "cases"
+  ],
+  "properties": {
+    "benchmark_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "format_version": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "scoring_targets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "default_systems_in_scope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 128,
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "category",
+          "source",
+          "input_event_trace",
+          "expected_primary",
+          "expected_secondary",
+          "expected_diagnostic",
+          "expected_axes",
+          "profile_targets",
+          "replay_required"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "omb_style_honesty",
+              "omb_style_harmlessness",
+              "omb_style_fairness",
+              "truthfulqa_derived_audit",
+              "bbq_derived_audit",
+              "cross_profile",
+              "cross_cultural",
+              "multi_agent"
+            ]
+          },
+          "origin_benchmark": {
+            "type": "string"
+          },
+          "origin_case_id": {
+            "type": "string"
+          },
+          "origin_split": {
+            "type": "string"
+          },
+          "input_event_trace": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "minItems": 1
+          },
+          "expected_primary": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expected_secondary": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expected_diagnostic": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expected_axes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "profile_targets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "replay_required": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,118 @@
+{
+  "system_id": "utilitarian_core",
+  "version": "1.0.0",
+  "name": "Utilitarian Core",
+  "description": "A consequence-oriented profile emphasizing harm reduction and net beneficial outcomes.",
+  "source": "built_in",
+  "objective_weights": {
+    "lambda_C": 0.2,
+    "lambda_S": 0.15,
+    "lambda_P": 0.1,
+    "lambda_M": 0.1,
+    "lambda_V": 0.35
+  },
+  "gate_thresholds": {
+    "C": 0.4,
+    "S": 0.4,
+    "P": 0.55,
+    "tau": 0.5,
+    "M": 0.45,
+    "U": 0.05
+  },
+  "allowed_moves": [
+    "G_REFRAME_JUSTICE",
+    "H_BOUNDARY_SET",
+    "BRIDGE_THEO_TO_PSY",
+    "BRIDGE_DATA_TO_THEORY"
+  ],
+  "principles": [
+    {
+      "principle_id": "MinimizeExpectedHarm",
+      "kind": "Prevention",
+      "priority": 10,
+      "hard_constraint": true,
+      "description": "High expected harm in a sensitive context is disallowed.",
+      "thresholds": {
+        "theta_harm": 0.64
+      },
+      "repair_actions": [
+        "AdmitUncertainty",
+        "EscalateHuman",
+        "BRIDGE_THEO_TO_PSY"
+      ],
+      "violation_rules": [
+        {
+          "all": [
+            {
+              "path": "event.sensitive_context",
+              "eq": true
+            },
+            {
+              "path": "state.spectral.Ecosyn",
+              "gt_threshold": "theta_harm"
+            }
+          ],
+          "reason": "Expected harm is too high for the current context.",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "principle_id": "NetBenefitFloor",
+      "kind": "Promotion",
+      "priority": 30,
+      "hard_constraint": false,
+      "description": "Outcomes should stay above a minimum net-benefit floor.",
+      "thresholds": {
+        "min_U": 0.1
+      },
+      "repair_actions": [
+        "G_REFRAME_JUSTICE",
+        "H_BOUNDARY_SET"
+      ],
+      "violation_rules": [
+        {
+          "all": [
+            {
+              "path": "state.spectral.U",
+              "lt_threshold": "min_U"
+            }
+          ],
+          "reason": "Net benefit is below the utilitarian floor.",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "principle_id": "EvidenceWeightedAction",
+      "kind": "Refinement",
+      "priority": 25,
+      "hard_constraint": false,
+      "description": "If confidence rises while evidence stays thin, slow the action down.",
+      "thresholds": {
+        "theta_kappa": 0.9,
+        "theta_eta": 0.3
+      },
+      "repair_actions": [
+        "DiscloseUncertainty",
+        "CiteEvidence"
+      ],
+      "violation_rules": [
+        {
+          "all": [
+            {
+              "path": "event.claimed_confidence",
+              "gt_threshold": "theta_kappa"
+            },
+            {
+              "path": "event.evidence_coverage",
+              "lt_threshold": "theta_eta"
+            }
+          ],
+          "reason": "Expected-value estimates are not reliable enough yet.",
+          "severity": "medium"
+        }
+      ]
+    }
+  ]
+}

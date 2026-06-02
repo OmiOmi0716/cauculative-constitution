@@ -1,0 +1,113 @@
+{
+  "system_id": "kantian_core",
+  "version": "1.0.0",
+  "name": "Kantian Core",
+  "description": "A deontic profile that treats truth distortion and unsupported certainty as hard failures.",
+  "source": "built_in",
+  "objective_weights": {
+    "lambda_C": 0.3,
+    "lambda_S": 0.15,
+    "lambda_P": 0.1,
+    "lambda_M": 0.05,
+    "lambda_V": 1.0
+  },
+  "gate_thresholds": {
+    "C": 0.3,
+    "S": 0.3,
+    "P": 0.45,
+    "tau": 0.65,
+    "M": 0.55,
+    "U": -0.1
+  },
+  "allowed_moves": [
+    "G_REFRAME_JUSTICE",
+    "H_BOUNDARY_SET"
+  ],
+  "forbidden_moves": [
+    "BRIDGE_DATA_TO_THEORY"
+  ],
+  "principles": [
+    {
+      "principle_id": "NoDeliberateDistortion",
+      "kind": "Prevention",
+      "priority": 5,
+      "hard_constraint": true,
+      "description": "Do not distort the truth beyond a narrow tolerance.",
+      "thresholds": {
+        "max_distortion": 0.05
+      },
+      "repair_actions": [
+        "ReduceTruthDistortion",
+        "RevealExactUncertainty"
+      ],
+      "violation_rules": [
+        {
+          "all": [
+            {
+              "path": "event.truth_distortion",
+              "gt_threshold": "max_distortion"
+            }
+          ],
+          "reason": "Truth distortion exceeds the Kantian tolerance.",
+          "severity": "critical"
+        }
+      ]
+    },
+    {
+      "principle_id": "NoFalseCertainty",
+      "kind": "Prevention",
+      "priority": 8,
+      "hard_constraint": true,
+      "description": "Do not speak with high certainty when evidence is weak.",
+      "thresholds": {
+        "theta_kappa": 0.85,
+        "theta_eta": 0.5
+      },
+      "repair_actions": [
+        "DiscloseUncertainty",
+        "CiteEvidence"
+      ],
+      "violation_rules": [
+        {
+          "all": [
+            {
+              "path": "event.claimed_confidence",
+              "gt_threshold": "theta_kappa"
+            },
+            {
+              "path": "event.evidence_coverage",
+              "lt_threshold": "theta_eta"
+            }
+          ],
+          "reason": "Unsupported certainty violates a duty of candor.",
+          "severity": "critical"
+        }
+      ]
+    },
+    {
+      "principle_id": "RespectBoundaries",
+      "kind": "Refinement",
+      "priority": 40,
+      "hard_constraint": false,
+      "description": "High causal risk requires boundary-setting rather than improvisation.",
+      "thresholds": {
+        "max_C": 0.5
+      },
+      "repair_actions": [
+        "H_BOUNDARY_SET"
+      ],
+      "violation_rules": [
+        {
+          "all": [
+            {
+              "path": "state.control.C",
+              "gt_threshold": "max_C"
+            }
+          ],
+          "reason": "Causal risk is too high for an unbounded response.",
+          "severity": "medium"
+        }
+      ]
+    }
+  ]
+}

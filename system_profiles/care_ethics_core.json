@@ -1,0 +1,120 @@
+{
+  "system_id": "care_ethics_core",
+  "version": "1.0.0",
+  "name": "Care Ethics Core",
+  "description": "A relational profile emphasizing vulnerability, trust, and repair over abstract purity.",
+  "source": "built_in",
+  "objective_weights": {
+    "lambda_C": 0.28,
+    "lambda_S": 0.18,
+    "lambda_P": 0.08,
+    "lambda_M": 0.2,
+    "lambda_V": 0.55
+  },
+  "gate_thresholds": {
+    "C": 0.32,
+    "S": 0.36,
+    "P": 0.5,
+    "tau": 0.45,
+    "M": 0.5,
+    "U": 0.0
+  },
+  "allowed_moves": [
+    "BRIDGE_THEO_TO_PSY",
+    "H_BOUNDARY_SET",
+    "G_REFRAME_JUSTICE"
+  ],
+  "forbidden_moves": [
+    "BRIDGE_DATA_TO_THEORY"
+  ],
+  "principles": [
+    {
+      "principle_id": "ProtectVulnerableContext",
+      "kind": "Prevention",
+      "priority": 10,
+      "hard_constraint": true,
+      "description": "Sensitive contexts require lower relational risk.",
+      "thresholds": {
+        "max_C": 0.45
+      },
+      "repair_actions": [
+        "EscalateHuman",
+        "BRIDGE_THEO_TO_PSY"
+      ],
+      "violation_rules": [
+        {
+          "all": [
+            {
+              "path": "event.sensitive_context",
+              "eq": true
+            },
+            {
+              "path": "state.control.C",
+              "gt_threshold": "max_C"
+            }
+          ],
+          "reason": "The relational risk is too high for a vulnerable context.",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "principle_id": "MaintainRelationalTrust",
+      "kind": "Refinement",
+      "priority": 35,
+      "hard_constraint": false,
+      "description": "Trust needs both truthfulness and enough synchrony.",
+      "thresholds": {
+        "max_distortion": 0.2,
+        "min_Esyn": 0.12
+      },
+      "repair_actions": [
+        "ReduceTruthDistortion",
+        "IncreaseSynchrony",
+        "BRIDGE_THEO_TO_PSY"
+      ],
+      "violation_rules": [
+        {
+          "any": [
+            {
+              "path": "event.truth_distortion",
+              "gt_threshold": "max_distortion"
+            },
+            {
+              "path": "state.spectral.Esyn",
+              "lt_threshold": "min_Esyn"
+            }
+          ],
+          "reason": "The response is not yet trustworthy enough for care-centered coordination.",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "principle_id": "PreserveRepairCapacity",
+      "kind": "Promotion",
+      "priority": 45,
+      "hard_constraint": false,
+      "description": "Do not close a trace while relational maturity stays too low.",
+      "thresholds": {
+        "min_M": 0.45
+      },
+      "repair_actions": [
+        "GatherMoreContext",
+        "DelayClosure"
+      ],
+      "violation_rules": [
+        {
+          "all": [
+            {
+              "path": "state.control.M",
+              "lt_threshold": "min_M"
+            }
+          ],
+          "reason": "Repair capacity is too low to treat the interaction as stable.",
+          "severity": "low"
+        }
+      ]
+    }
+  ]
+}

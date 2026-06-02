@@ -29,27 +29,6 @@ Notes:
 - ...
 ```
 
-## 2026-05-02 17:55 Asia/Taipei - Submission Cleanup And Repo Hygiene
-
-Type: docs, repo hygiene
-Status: complete
-
-Summary:
-- Added `.gitignore`.
-- Excluded local virtual environment, private archive, temporary PDF extracts, MCD test output, tmp folders, `.env`, `.log`, `__pycache__`, and `*.pyc` from repo packaging.
-- Corrected `pyproject.toml` author metadata to `Tzuxuan Huang`.
-- Removed local temporary/runtime-output folders from the working tree where applicable.
-
-Files changed:
-- `.gitignore`
-- `pyproject.toml`
-- `MODIFICATION_LOG.md`
-
-Verification:
-- No code behavior, scoring rules, tests, frozen release artifacts, or current evidence numbers changed.
-- Final unittest verification completed with 31 tests OK.
-- Note: the existing `test_core128` unittest calls `write_core128_outputs()`, which refreshes generated Core-128 output file timestamps during verification. The Core-128 summary remained unchanged: `case_count = 128`, `weighted_total_score = 0.990805`, `weighted_auditability_score = 1.0`, `event_log_success_rate = 1.0`, `replay_success_rate = 1.0`, `risk_attribution_coverage = 1.0`, `expected_subset_recall_mean = 1.0`, `holdout_gap = 0.019687`, `comparative_conflict_observable_rate = 1.0`.
-
 ## 2026-05-01 16:30 Asia/Taipei - Six-Axis Auditability MVP
 
 Type: code, test, docs, runtime, benchmark analysis

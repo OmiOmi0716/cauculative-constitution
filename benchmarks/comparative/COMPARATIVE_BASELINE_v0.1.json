@@ -1,0 +1,248 @@
+{
+  "core_claim": "We show that heterogeneous ethical systems can be executed, audited, replayed, and compared under a shared event-log protocol, with measurable agreement, conflict, and repair structures.",
+  "suite_reports": [
+    {
+      "suite_id": "Cross-Profile-Audit-Mini",
+      "suite_name": "Cross-Profile Audit Mini",
+      "mode_results": [
+        {
+          "mode_id": "single_profile_only",
+          "label": "Single Profile Only",
+          "case_count": 10,
+          "profile_count": 1,
+          "profile_runs": 10,
+          "raw_violation_signal_cases": 10,
+          "raw_repair_signal_cases": 10,
+          "per_profile_replay_available": true,
+          "cross_profile_replay_available": false,
+          "agreement_matrix_available": false,
+          "agreement_pairs_observed": 0,
+          "conflict_observable_cases": 0,
+          "shared_axis_cases": 0,
+          "profile_specific_repair_cases": 0,
+          "repair_attribution_available": false,
+          "notes": "A single ethics profile can replay its own trace, but it cannot expose disagreement or repair deltas across systems."
+        },
+        {
+          "mode_id": "profile_silo",
+          "label": "Profiles In Silos",
+          "case_count": 10,
+          "profile_count": 4,
+          "profile_runs": 40,
+          "raw_violation_signal_cases": 10,
+          "raw_repair_signal_cases": 10,
+          "per_profile_replay_available": true,
+          "cross_profile_replay_available": false,
+          "agreement_matrix_available": false,
+          "agreement_pairs_observed": 0,
+          "conflict_observable_cases": 0,
+          "shared_axis_cases": 0,
+          "profile_specific_repair_cases": 0,
+          "repair_attribution_available": false,
+          "notes": "Multiple profiles run independently, but disagreement stays latent because there is no shared alignment layer or comparative report."
+        },
+        {
+          "mode_id": "full_comparative_layer",
+          "label": "Full Comparative Layer",
+          "case_count": 10,
+          "profile_count": 4,
+          "profile_runs": 40,
+          "raw_violation_signal_cases": 10,
+          "raw_repair_signal_cases": 10,
+          "per_profile_replay_available": true,
+          "cross_profile_replay_available": true,
+          "agreement_matrix_available": true,
+          "agreement_pairs_observed": 6,
+          "conflict_observable_cases": 10,
+          "shared_axis_cases": 8,
+          "profile_specific_repair_cases": 10,
+          "repair_attribution_available": true,
+          "notes": "Shared event-log alignment exposes agreement, conflict, shared axes, and profile-specific repair deltas under one replayable protocol."
+        }
+      ]
+    },
+    {
+      "suite_id": "Cross-Cultural-Audit-Mini",
+      "suite_name": "Cross-Cultural Audit Mini",
+      "mode_results": [
+        {
+          "mode_id": "single_profile_only",
+          "label": "Single Profile Only",
+          "case_count": 8,
+          "profile_count": 1,
+          "profile_runs": 8,
+          "raw_violation_signal_cases": 8,
+          "raw_repair_signal_cases": 8,
+          "per_profile_replay_available": true,
+          "cross_profile_replay_available": false,
+          "agreement_matrix_available": false,
+          "agreement_pairs_observed": 0,
+          "conflict_observable_cases": 0,
+          "shared_axis_cases": 0,
+          "profile_specific_repair_cases": 0,
+          "repair_attribution_available": false,
+          "notes": "A single ethics profile can replay its own trace, but it cannot expose disagreement or repair deltas across systems."
+        },
+        {
+          "mode_id": "profile_silo",
+          "label": "Profiles In Silos",
+          "case_count": 8,
+          "profile_count": 4,
+          "profile_runs": 32,
+          "raw_violation_signal_cases": 8,
+          "raw_repair_signal_cases": 8,
+          "per_profile_replay_available": true,
+          "cross_profile_replay_available": false,
+          "agreement_matrix_available": false,
+          "agreement_pairs_observed": 0,
+          "conflict_observable_cases": 0,
+          "shared_axis_cases": 0,
+          "profile_specific_repair_cases": 0,
+          "repair_attribution_available": false,
+          "notes": "Multiple profiles run independently, but disagreement stays latent because there is no shared alignment layer or comparative report."
+        },
+        {
+          "mode_id": "full_comparative_layer",
+          "label": "Full Comparative Layer",
+          "case_count": 8,
+          "profile_count": 4,
+          "profile_runs": 32,
+          "raw_violation_signal_cases": 8,
+          "raw_repair_signal_cases": 8,
+          "per_profile_replay_available": true,
+          "cross_profile_replay_available": true,
+          "agreement_matrix_available": true,
+          "agreement_pairs_observed": 6,
+          "conflict_observable_cases": 8,
+          "shared_axis_cases": 8,
+          "profile_specific_repair_cases": 8,
+          "repair_attribution_available": true,
+          "notes": "Shared event-log alignment exposes agreement, conflict, shared axes, and profile-specific repair deltas under one replayable protocol."
+        }
+      ]
+    },
+    {
+      "suite_id": "Multi-Agent-Audit-Mini",
+      "suite_name": "Multi-Agent Audit Mini",
+      "mode_results": [
+        {
+          "mode_id": "single_profile_only",
+          "label": "Single Profile Only",
+          "case_count": 8,
+          "profile_count": 1,
+          "profile_runs": 8,
+          "raw_violation_signal_cases": 8,
+          "raw_repair_signal_cases": 8,
+          "per_profile_replay_available": true,
+          "cross_profile_replay_available": false,
+          "agreement_matrix_available": false,
+          "agreement_pairs_observed": 0,
+          "conflict_observable_cases": 0,
+          "shared_axis_cases": 0,
+          "profile_specific_repair_cases": 0,
+          "repair_attribution_available": false,
+          "notes": "A single ethics profile can replay its own trace, but it cannot expose disagreement or repair deltas across systems."
+        },
+        {
+          "mode_id": "profile_silo",
+          "label": "Profiles In Silos",
+          "case_count": 8,
+          "profile_count": 4,
+          "profile_runs": 32,
+          "raw_violation_signal_cases": 8,
+          "raw_repair_signal_cases": 8,
+          "per_profile_replay_available": true,
+          "cross_profile_replay_available": false,
+          "agreement_matrix_available": false,
+          "agreement_pairs_observed": 0,
+          "conflict_observable_cases": 0,
+          "shared_axis_cases": 0,
+          "profile_specific_repair_cases": 0,
+          "repair_attribution_available": false,
+          "notes": "Multiple profiles run independently, but disagreement stays latent because there is no shared alignment layer or comparative report."
+        },
+        {
+          "mode_id": "full_comparative_layer",
+          "label": "Full Comparative Layer",
+          "case_count": 8,
+          "profile_count": 4,
+          "profile_runs": 32,
+          "raw_violation_signal_cases": 8,
+          "raw_repair_signal_cases": 8,
+          "per_profile_replay_available": true,
+          "cross_profile_replay_available": true,
+          "agreement_matrix_available": true,
+          "agreement_pairs_observed": 6,
+          "conflict_observable_cases": 8,
+          "shared_axis_cases": 8,
+          "profile_specific_repair_cases": 8,
+          "repair_attribution_available": true,
+          "notes": "Shared event-log alignment exposes agreement, conflict, shared axes, and profile-specific repair deltas under one replayable protocol."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "suite_count": 3,
+    "total_cases": 26,
+    "overall_by_mode": {
+      "single_profile_only": {
+        "label": "Single Profile Only",
+        "case_count": 26,
+        "profile_runs": 26,
+        "raw_violation_signal_cases": 26,
+        "raw_repair_signal_cases": 26,
+        "agreement_pairs_observed": 0,
+        "conflict_observable_cases": 0,
+        "shared_axis_cases": 0,
+        "profile_specific_repair_cases": 0,
+        "per_profile_replay_available": true,
+        "cross_profile_replay_available": false,
+        "agreement_matrix_available": false,
+        "repair_attribution_available": false
+      },
+      "profile_silo": {
+        "label": "Profiles In Silos",
+        "case_count": 26,
+        "profile_runs": 104,
+        "raw_violation_signal_cases": 26,
+        "raw_repair_signal_cases": 26,
+        "agreement_pairs_observed": 0,
+        "conflict_observable_cases": 0,
+        "shared_axis_cases": 0,
+        "profile_specific_repair_cases": 0,
+        "per_profile_replay_available": true,
+        "cross_profile_replay_available": false,
+        "agreement_matrix_available": false,
+        "repair_attribution_available": false
+      },
+      "full_comparative_layer": {
+        "label": "Full Comparative Layer",
+        "case_count": 26,
+        "profile_runs": 104,
+        "raw_violation_signal_cases": 26,
+        "raw_repair_signal_cases": 26,
+        "agreement_pairs_observed": 18,
+        "conflict_observable_cases": 26,
+        "shared_axis_cases": 24,
+        "profile_specific_repair_cases": 26,
+        "per_profile_replay_available": true,
+        "cross_profile_replay_available": true,
+        "agreement_matrix_available": true,
+        "repair_attribution_available": true
+      }
+    },
+    "delta_vs_single_profile_only": {
+      "agreement_pairs_observed": 18,
+      "conflict_observable_cases": 26,
+      "shared_axis_cases": 24,
+      "profile_specific_repair_cases": 26
+    },
+    "delta_vs_profile_silo": {
+      "agreement_pairs_observed": 18,
+      "conflict_observable_cases": 26,
+      "shared_axis_cases": 24,
+      "profile_specific_repair_cases": 26
+    }
+  }
+}

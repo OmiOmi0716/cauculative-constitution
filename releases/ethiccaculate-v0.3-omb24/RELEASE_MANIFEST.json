@@ -1,0 +1,126 @@
+﻿{
+    "release_id":  "ethiccaculate-v0.3-omb24",
+    "frozen_at":  "2026-05-01T20:51:39+08:00",
+    "release_dir":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24",
+    "evaluation_summary":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\EVALUATION_SUMMARY.md",
+    "runtime_smoke":  {
+                          "event_log":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\runtime_smoke\\runtime_event_log.json",
+                          "replay_bundle":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\runtime_smoke\\runtime_replay_bundle.json",
+                          "risk_attribution":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\runtime_smoke\\runtime_risk_attribution.md"
+                      },
+    "benchmark_summary":  {
+                              "omb24_dev_v0_3":  {
+                                                     "weighted_safety_score":  0.984073,
+                                                     "weighted_auditability_score":  1.0,
+                                                     "weighted_total_score":  0.988851,
+                                                     "case_count":  24,
+                                                     "pair_count":  4,
+                                                     "exact_violation_match_rate":  0.0,
+                                                     "gate_correctness_rate":  1.0,
+                                                     "cross_conflict_exact_rate":  0.0,
+                                                     "pair_invariance_rate":  1.0,
+                                                     "by_system_expected_subset_recall_mean":  1.0,
+                                                     "by_system_over_trigger_penalty_mean":  0.505208,
+                                                     "by_system_exact_match_rate":  0.0625,
+                                                     "expected_subset_recall_mean":  1.0,
+                                                     "over_trigger_penalty_mean":  0.14273,
+                                                     "raw_expected_subset_recall_mean":  1.0,
+                                                     "raw_over_trigger_penalty_mean":  0.791667,
+                                                     "primary_precision_mean":  0.979167,
+                                                     "secondary_allowance_mean":  0.875,
+                                                     "diagnostic_coverage_mean":  1.0,
+                                                     "extra_label_case_count":  24,
+                                                     "top_over_triggered_labels":  {
+                                                                                       "Helpfulness":  24,
+                                                                                       "ConstructiveHonesty":  23,
+                                                                                       "Harmlessness":  1
+                                                                                   },
+                                                     "top_demoted_labels":  {
+                                                                                "Helpfulness":  24,
+                                                                                "ConstructiveHonesty":  8
+                                                                            }
+                                                 },
+                              "omb_holdout24_v0_3":  {
+                                                         "weighted_safety_score":  0.94236,
+                                                         "weighted_auditability_score":  1.0,
+                                                         "weighted_total_score":  0.959652,
+                                                         "case_count":  24,
+                                                         "pair_count":  4,
+                                                         "exact_violation_match_rate":  0.0,
+                                                         "gate_correctness_rate":  1.0,
+                                                         "cross_conflict_exact_rate":  0.0,
+                                                         "pair_invariance_rate":  1.0,
+                                                         "by_system_expected_subset_recall_mean":  1.0,
+                                                         "by_system_over_trigger_penalty_mean":  0.53125,
+                                                         "by_system_exact_match_rate":  0.0625,
+                                                         "expected_subset_recall_mean":  1.0,
+                                                         "over_trigger_penalty_mean":  0.231383,
+                                                         "raw_expected_subset_recall_mean":  1.0,
+                                                         "raw_over_trigger_penalty_mean":  0.809028,
+                                                         "primary_precision_mean":  0.875,
+                                                         "secondary_allowance_mean":  0.875,
+                                                         "diagnostic_coverage_mean":  1.0,
+                                                         "extra_label_case_count":  24,
+                                                         "top_over_triggered_labels":  {
+                                                                                           "Helpfulness":  24,
+                                                                                           "ConstructiveHonesty":  23,
+                                                                                           "Honesty":  5,
+                                                                                           "Harmlessness":  1
+                                                                                       },
+                                                         "top_demoted_labels":  {
+                                                                                    "Helpfulness":  24,
+                                                                                    "ConstructiveHonesty":  8
+                                                                                }
+                                                     }
+                          },
+    "artifacts":  [
+                      {
+                          "name":  "OMB24_SCORING_v0.3.json",
+                          "source":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\benchmarks\\dev\\OMB24_SCORING_v0.3.json",
+                          "frozen_copy":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\frozen_artifacts\\OMB24_SCORING_v0.3.json",
+                          "sha256":  "22fe78fbf69679b605c9ff2ec9b97a9f0abbd10f6883652e6d949e50ab1f3c1c"
+                      },
+                      {
+                          "name":  "OMB24_SCORING_RUBRIC_v0.3.md",
+                          "source":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\benchmarks\\dev\\OMB24_SCORING_RUBRIC_v0.3.md",
+                          "frozen_copy":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\frozen_artifacts\\OMB24_SCORING_RUBRIC_v0.3.md",
+                          "sha256":  "f00dc3a6c3f5d37b337995835b28ba718b679d6807b97ac8bbfa60ab72e58bca"
+                      },
+                      {
+                          "name":  "OMB24_OVER_TRIGGER_CALIBRATION_v0.3.md",
+                          "source":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\benchmarks\\dev\\OMB24_OVER_TRIGGER_CALIBRATION_v0.3.md",
+                          "frozen_copy":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\frozen_artifacts\\OMB24_OVER_TRIGGER_CALIBRATION_v0.3.md",
+                          "sha256":  "59274d23baeb89a5637e0bf823dbb7aee4e078cde73461422cc0e1c13fe28071"
+                      },
+                      {
+                          "name":  "OMB24_EXTRA_LABEL_REPORT_v0.3.md",
+                          "source":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\benchmarks\\dev\\OMB24_EXTRA_LABEL_REPORT_v0.3.md",
+                          "frozen_copy":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\frozen_artifacts\\OMB24_EXTRA_LABEL_REPORT_v0.3.md",
+                          "sha256":  "9f35ddd5b65a986f3aec676ef0e6453e2638f874ccdf59ab471f9d769b05dacd"
+                      },
+                      {
+                          "name":  "OMB_HOLDOUT24_SCORING_v0.3.json",
+                          "source":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\benchmarks\\holdout\\OMB_HOLDOUT24_SCORING_v0.3.json",
+                          "frozen_copy":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\frozen_artifacts\\OMB_HOLDOUT24_SCORING_v0.3.json",
+                          "sha256":  "dd370702d1d8a3a2c9f5d9c8cea88132c9596b574b3d80b457a42ecc1ee275e6"
+                      },
+                      {
+                          "name":  "OMB_HOLDOUT24_VALIDATION_v0.3.md",
+                          "source":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\benchmarks\\holdout\\OMB_HOLDOUT24_VALIDATION_v0.3.md",
+                          "frozen_copy":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\frozen_artifacts\\OMB_HOLDOUT24_VALIDATION_v0.3.md",
+                          "sha256":  "6b7d38220d75af6638577d74d57f9ee589fce9bbacacefe5693d18f22de1f6be"
+                      },
+                      {
+                          "name":  "README.md",
+                          "source":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\README.md",
+                          "frozen_copy":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\frozen_artifacts\\README.md",
+                          "sha256":  "5ddafe33dcadfadaa6219d078deff584e9b726ebc956672a0d085942bc2d5e7a"
+                      },
+                      {
+                          "name":  "MODIFICATION_LOG.md",
+                          "source":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\MODIFICATION_LOG.md",
+                          "frozen_copy":  "C:\\Users\\luna0\\Documents\\Codex\\2026-05-01\\new-chat\\ethiccaculate\\releases\\ethiccaculate-v0.3-omb24\\frozen_artifacts\\MODIFICATION_LOG.md",
+                          "sha256":  "56dbfa874a5a64b705485ce0e0391ac0fba7b0d3e7295ef434dda60e2a7f8ad0"
+                      }
+                  ]
+}
