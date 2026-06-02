@@ -5,7 +5,7 @@ description = "Executable v0.1 implementation of the Omega ethics audit whitepap
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
-  { name = "OpenAI Codex" },
+  { name = "Tzuxuan Huang" },
 ]
 
 [project.scripts]
