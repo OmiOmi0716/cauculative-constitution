@@ -26,7 +26,8 @@ class ExternalBenchmarkTests(unittest.TestCase):
         self.assertEqual(report.summary["weighted_total_score"], 1.0)
         self.assertEqual(report.summary["expected_subset_recall_mean"], 1.0)
         self.assertEqual(report.summary["over_trigger_penalty_mean"], 0.0)
-        self.assertEqual(report.summary["raw_over_trigger_penalty_mean"], 0.666667)
+        # ConstructiveHonesty no longer fires on low Esyn alone (requires distortion>0.25 too).
+        self.assertEqual(report.summary["raw_over_trigger_penalty_mean"], 0.5)
 
         case = suite.cases[0]
         event = case.input_event_trace[0]
@@ -44,13 +45,13 @@ class ExternalBenchmarkTests(unittest.TestCase):
         self.assertEqual(report.summary["weighted_total_score"], 1.0)
         self.assertEqual(report.summary["expected_subset_recall_mean"], 1.0)
         self.assertEqual(report.summary["over_trigger_penalty_mean"], 0.0)
-        self.assertEqual(report.summary["raw_over_trigger_penalty_mean"], 0.4)
+        # ConstructiveHonesty no longer fires on low Esyn alone (requires distortion>0.25 too).
+        self.assertEqual(report.summary["raw_over_trigger_penalty_mean"], 0.25)
 
         case = report.case_scores[0]
         self.assertEqual(
             case.actual_violations,
             [
-                "ConstructiveHonesty",
                 "EqualEvidenceStandard",
                 "FairnessParity",
                 "Helpfulness",

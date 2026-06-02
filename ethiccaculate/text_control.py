@@ -13,18 +13,102 @@ Axis semantics (want low for C/S/X/P, want high for tau/M):
   tau Task progress        [>= 0.60 to pass write_gate]
   M   Memory / coherence   [>= 0.55 to pass write_gate]
 
+Formal spec alignment (v2.5-formal-safety):
+  D_C = alpha*leak + beta*(1-SC)               §9.1 Causal axis
+  D_S = w1*entropy_risk + w2*answer_var + w3*instability   §9.2 S-lite
+  d_tau = N_remain + lambda_tau*N_stall        §9.6 tau axis
+  tau_mix = q_t * tau_score                    §9.6 quality gate
+  score_a = max(0, 1 - d_a/(kappa_a+1))       §13  monitoring
+  H_eps   = exp(sum w_a*log(score_a+eps))-eps  §13  health
+
 NLI-like claim analysis:
   Identifies assertions, their evidence support, and logical structure.
-  Provides claim_support_ratio used by the Honesty axis correction.
+  Provides claim_support_ratio used by the Causal axis correction.
 """
 
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
-from math import log
+from dataclasses import dataclass, field
+from enum import Enum
+from math import ceil, exp, log as _log
 
 from .models import ControlState
+
+
+# ---------------------------------------------------------------------------
+# Formal spec: M state machine (v2.5 §9.5)
+# ---------------------------------------------------------------------------
+
+class MemoryState(Enum):
+    """
+    Memory axis state machine from v2.5 §9.5.
+
+    Transitions:
+      transient        -> commit_candidate
+      commit_candidate -> committed | rejected | conflict
+      conflict         -> rejected
+                       -> commit_candidate  (only when conflict resolved by verified evidence)
+      committed        -> recalled -> committed
+      rejected is terminal
+    """
+    transient = "transient"
+    commit_candidate = "commit_candidate"
+    committed = "committed"
+    recalled = "recalled"
+    rejected = "rejected"
+    conflict = "conflict"
+
+
+# ---------------------------------------------------------------------------
+# Formal spec: axis health scoring (v2.5 §13)
+# ---------------------------------------------------------------------------
+
+def score_a(d_a: float, kappa_a: int) -> float:
+    """
+    Axis health score from defect value.  (v2.5 §13)
+
+      score_a = max(0, 1 - toNat(d_a) / (kappa_a + 1))
+
+    Properties:
+      d_a = 0          -> 1.0  (no defect)
+      d_a = kappa_a    -> 1/(kappa_a+1)  (at threshold)
+      d_a > kappa_a    -> 0    (outside acceptable domain)
+    """
+    return max(0.0, 1.0 - d_a / (kappa_a + 1))
+
+
+def health_score_epsilon(
+    scores: dict[str, float],
+    weights: dict[str, float] | None = None,
+    epsilon: float = 1e-6,
+) -> float:
+    """
+    Epsilon-geometric-mean health monitoring indicator.  (v2.5 §13)
+
+      H_eps = exp( sum_{a in A} w_a * log(score_a + eps) ) - eps
+
+    Properties:
+      all scores = 1  ->  H_eps ≈ 1
+      any score  = 0  ->  H_eps = 0
+      H_eps in [0, 1]
+
+    Args:
+        scores:  per-axis scores in [0, 1]
+        weights: per-axis weights (uniform if None); must be non-negative
+        epsilon: numerical stability floor (default 1e-6)
+    """
+    if not scores:
+        return 0.0
+    n = len(scores)
+    total_w = sum(weights.values()) if weights else float(n)
+    if total_w <= 0.0:
+        return 0.0
+    log_sum = sum(
+        ((weights or {}).get(a, 1.0) / total_w) * _log(max(0.0, scores[a]) + epsilon)
+        for a in scores
+    )
+    return max(0.0, min(1.0, exp(log_sum) - epsilon))
 
 
 # ---------------------------------------------------------------------------
@@ -39,7 +123,7 @@ _CONTRADICTION = frozenset({
 
 _CAUSAL = frozenset({
     "because", "therefore", "thus", "hence", "since", "consequently",
-    "as a result", "due to", "owing to", "given that", "so", "hence",
+    "as a result", "due to", "owing to", "given that", "so",
     "which means", "it follows", "accordingly", "for this reason",
 })
 
@@ -92,7 +176,6 @@ _CONFIDENCE_MARKERS = frozenset({
 # ---------------------------------------------------------------------------
 
 def _split_sentences(text: str) -> list[str]:
-    """Split text into sentences using punctuation boundaries."""
     parts = re.split(r"(?<=[.!?])\s+", text.strip())
     return [p.strip() for p in parts if p.strip()]
 
@@ -102,7 +185,7 @@ def _tokenize(text: str) -> list[str]:
 
 
 def _contains_any(tokens: list[str], word_set: frozenset[str], window: int = 0) -> int:
-    """Count how many tokens (or bigrams for window=1) appear in word_set."""
+    """Count tokens (or bigrams for window=1) appearing in word_set."""
     count = 0
     for i, t in enumerate(tokens):
         if t in word_set:
@@ -196,7 +279,7 @@ def analyze_claims(text: str) -> ClaimAnalysis:
 
 
 # ---------------------------------------------------------------------------
-# Per-axis estimators
+# Per-axis estimators — aligned with formal D_a risk functions (v2.5 §9)
 # ---------------------------------------------------------------------------
 
 def _clamp(v: float, lo: float = 0.05, hi: float = 0.95) -> float:
@@ -205,29 +288,45 @@ def _clamp(v: float, lo: float = 0.05, hi: float = 0.95) -> float:
 
 def _estimate_C(tokens: list[str], claims: ClaimAnalysis) -> float:
     """
-    C = Causal consistency axis  [want low, pass threshold <= 0.35]
+    D_C = alpha*leak + beta*(1-SC)       (v2.5 §9.1)
 
-    High C: many contradictions, logical gaps
-    Low C:  consistent reasoning, explicit causals
+    Text proxies:
+      leak(x)  ← contradiction density (causal inconsistency signal)
+      SC(x)    ← claim_support_ratio (evidenced / confident assertions)
+
+    SC = 0 when confident assertions exist but none are evidenced.
+    No assertions at all → SC = 1 (trivially consistent, no claims to check).
     """
-    n_sent = claims.sentence_count
-    contra_density = claims.contradiction_count / n_sent
-    causal_density = claims.logical_count / n_sent
-    return _clamp(0.25 + 0.45 * contra_density - 0.15 * causal_density)
+    n = claims.sentence_count
+    contra_density = claims.contradiction_count / n   # leak proxy
+    SC = claims.claim_support_ratio
+    if claims.confident_count == 0 and claims.evidenced_count == 0:
+        SC = 1.0  # no assertions → no inconsistency to detect
+    alpha, beta = 0.35, 0.50
+    D_C = alpha * contra_density + beta * (1.0 - SC)
+    return _clamp(D_C)
 
 
 def _estimate_S(tokens: list[str], claims: ClaimAnalysis) -> float:
     """
-    S = Stability axis  [want low, pass threshold <= 0.35]
+    S-lite: D_S = w1*entropy_risk + w2*answer_variance + w3*retry_instability
+                                                         (v2.5 §9.2)
 
-    High S: hedged, topic-diverse, uncertain text
-    Low S:  focused, direct statements
+    Text proxies:
+      entropy_risk     ← hedge token density (scaled per sentence)
+      answer_variance  ← question density (unresolved = distributional spread)
+      retry_instability ← contradiction density (topic/stance reversals)
     """
-    n = max(len(tokens), 1)
-    n_sent = claims.sentence_count
-    hedge_density = _contains_any(tokens, _HEDGE) / n_sent
-    question_density = claims.question_count / n_sent
-    return _clamp(0.18 + 0.45 * hedge_density + 0.20 * question_density)
+    n = claims.sentence_count
+    hedge_count = _contains_any(tokens, _HEDGE)
+    hedge_per_sent = hedge_count / n
+    # Hedging is a soft stability signal: scale so ~2 hedges/sentence ≈ risk=1
+    entropy_risk = min(1.0, hedge_per_sent * 0.5)
+    answer_variance = claims.question_count / n
+    retry_instability = min(1.0, (claims.contradiction_count / n) * 2.0)
+    w1, w2, w3 = 0.40, 0.30, 0.30
+    D_S = w1 * entropy_risk + w2 * answer_variance + w3 * retry_instability
+    return _clamp(D_S)
 
 
 def _estimate_X(tokens: list[str], claims: ClaimAnalysis) -> float:
@@ -235,7 +334,6 @@ def _estimate_X(tokens: list[str], claims: ClaimAnalysis) -> float:
     X = External event rate  [want low, pass threshold <= 0.50]
 
     High X: many external references, URLs, citations
-    Low X:  self-contained text
     """
     n_sent = claims.sentence_count
     ext_density = _contains_any(tokens, _EXTERNAL_REF, window=1) / n_sent
@@ -247,7 +345,6 @@ def _estimate_P(tokens: list[str], claims: ClaimAnalysis) -> float:
     P = Pressure / urgency axis  [want low, pass threshold <= 0.50]
 
     High P: urgency words, time pressure
-    Low P:  measured, considered tone
     """
     n_sent = claims.sentence_count
     urgency_density = _contains_any(tokens, _URGENCY) / n_sent
@@ -257,29 +354,51 @@ def _estimate_P(tokens: list[str], claims: ClaimAnalysis) -> float:
 
 def _estimate_tau(tokens: list[str], claims: ClaimAnalysis) -> float:
     """
-    tau = Task progress  [want high, pass threshold >= 0.60]
+    d_tau = N_remain + lambda_tau * N_stall       (v2.5 §9.6)
+    tau_score = max(0, 1 - d_tau / (kappa_tau+1)) (score_a formula)
+    tau_mix   = q_t * tau_score + closure_bonus   (quality gate)
 
-    High tau: text completes stated purpose, has closure
-    Low tau:  many open questions, incomplete
+    Text proxies:
+      N_remain ← question_count (unresolved questions = remaining work)
+      N_stall  ← max(0, question_count - logical_count) (questions
+                 without causal resolution = stall windows)
+      q_t      ← logical_structure_score * consistency_score
+                 (quality gate: text is both structured and consistent)
     """
-    n_sent = claims.sentence_count
-    closure_density = _contains_any(tokens, _CLOSURE, window=1) / n_sent
-    question_density = claims.question_count / n_sent
-    logical_density = claims.logical_count / n_sent
-    return _clamp(0.60 + 0.25 * closure_density + 0.10 * logical_density - 0.25 * question_density)
+    n = claims.sentence_count
+    lambda_tau = 2.0      # stall penalty multiplier (v2.5 requires > 0)
+    kappa_tau = 4         # acceptable defect threshold
+    N_remain = claims.question_count
+    N_stall = max(0, claims.question_count - claims.logical_count)
+    d_tau = N_remain + lambda_tau * N_stall
+    tau_score = max(0.0, 1.0 - d_tau / (kappa_tau + 1))
+    # Quality gate: well-structured + consistent text earns higher tau
+    q_t = claims.logical_structure_score * claims.consistency_score
+    # tau_mix = quality-gated score + closure bonus
+    closure_count = _contains_any(tokens, _CLOSURE, window=1)
+    closure_density = closure_count / n
+    tau_mix = (0.70 + 0.30 * q_t) * tau_score + 0.15 * closure_density
+    return _clamp(tau_mix)
 
 
 def _estimate_M(tokens: list[str], claims: ClaimAnalysis) -> float:
     """
     M = Memory coherence  [want high, pass threshold >= 0.55]
 
-    High M: good internal references, coherent pronouns, no topic fragmentation
-    Low M:  disconnected, repetitive without reference
+    D_M proxy: contradiction_count drives memory conflict risk.
+    High M: good internal references, coherent pronouns, no conflicts.
+
+    Maps to MemoryState via:
+      M >= 0.80  →  committed / recalled
+      M >= 0.55  →  commit_candidate
+      M < 0.55   →  transient / conflict
     """
-    n_sent = claims.sentence_count
-    cohesive_density = _contains_any(tokens, _PRONOUNS_COHESIVE) / n_sent
-    causal_density = claims.logical_count / n_sent
-    return _clamp(0.65 + 0.15 * cohesive_density + 0.10 * causal_density)
+    n = claims.sentence_count
+    cohesive_density = _contains_any(tokens, _PRONOUNS_COHESIVE) / n
+    causal_density = claims.logical_count / n
+    # Conflict penalty from contradiction count (d_M = w3*N_memory_conflict proxy)
+    conflict_penalty = min(0.30, (claims.contradiction_count / n) * 0.30)
+    return _clamp(0.65 + 0.15 * cohesive_density + 0.10 * causal_density - conflict_penalty)
 
 
 # ---------------------------------------------------------------------------
@@ -291,7 +410,8 @@ class TextControlResult:
     """Full diagnostic output of text control estimation."""
     control: ControlState
     claims: ClaimAnalysis
-    write_gate_feasible: bool   # True if all axes can satisfy write_gate thresholds
+    write_gate_feasible: bool   # True if all axes satisfy write_gate thresholds
+    health_score: float = 0.0  # H_epsilon monitoring metric (v2.5 §13)
 
     def format_axes(self) -> str:
         c = self.control
@@ -302,6 +422,7 @@ class TextControlResult:
             f"  P (pressure)    : {c.P:.4f}  {'<= 0.50 OK' if c.P <= 0.50 else '> 0.50 FAIL'}",
             f"  tau (progress)  : {c.tau:.4f}  {'>= 0.60 OK' if c.tau >= 0.60 else '< 0.60 FAIL'}",
             f"  M (coherence)   : {c.M:.4f}  {'>= 0.55 OK' if c.M >= 0.55 else '< 0.55 FAIL'}",
+            f"  health (H_eps)  : {self.health_score:.4f}",
         ]
         return "\n".join(lines)
 
@@ -313,11 +434,15 @@ def estimate_control_from_text(text: str) -> TextControlResult:
     This replaces fallback_control_from_spectral() for text-based evaluation,
     making write_gate meaningful without vLLM telemetry.
 
+    The axis estimators map formal D_a risk functions (v2.5 §9) to
+    linguistic proxies extracted without an ML model.
+
     Args:
         text: Raw text to analyze
 
     Returns:
-        TextControlResult with ControlState and full ClaimAnalysis
+        TextControlResult with ControlState, ClaimAnalysis, and H_epsilon
+        health score.
     """
     tokens = _tokenize(text)
     claims = analyze_claims(text)
@@ -331,7 +456,6 @@ def estimate_control_from_text(text: str) -> TextControlResult:
         M=_estimate_M(tokens, claims),
     )
 
-    # Check against write_gate thresholds (GateThresholds defaults)
     feasible = (
         control.C <= 0.35
         and control.S <= 0.35
@@ -341,4 +465,22 @@ def estimate_control_from_text(text: str) -> TextControlResult:
         and control.M >= 0.55
     )
 
-    return TextControlResult(control=control, claims=claims, write_gate_feasible=feasible)
+    # Compute per-axis health scores normalised to write_gate thresholds.
+    # For risk axes (C,S,X,P): score = max(0, 1 - value/threshold)
+    # For progress axes (tau,M): score = min(1, (value - floor) / (1 - floor))
+    axis_scores = {
+        "C":   max(0.0, 1.0 - control.C / 0.35),
+        "S":   max(0.0, 1.0 - control.S / 0.35),
+        "X":   max(0.0, 1.0 - control.X / 0.50),
+        "P":   max(0.0, 1.0 - control.P / 0.50),
+        "tau": max(0.0, min(1.0, (control.tau - 0.30) / 0.70)),
+        "M":   max(0.0, min(1.0, (control.M  - 0.30) / 0.70)),
+    }
+    h_score = health_score_epsilon(axis_scores)
+
+    return TextControlResult(
+        control=control,
+        claims=claims,
+        write_gate_feasible=feasible,
+        health_score=h_score,
+    )

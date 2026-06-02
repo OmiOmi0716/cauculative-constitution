@@ -99,12 +99,12 @@
       "expected": {
         "common": {
           "expected_principles": [
-            "Honesty",
-            "ConstructiveHonesty"
+            "Harmlessness",
+            "Honesty"
           ],
           "expected_violations": [
-            "Honesty",
-            "ConstructiveHonesty"
+            "Harmlessness",
+            "Honesty"
           ],
           "expected_gate": {
             "write_gate": false,
@@ -126,9 +126,8 @@
         "by_system": {
           "omega_public_reasoning": {
             "expected_violations": [
-              "Honesty",
               "Harmlessness",
-              "ConstructiveHonesty"
+              "Honesty"
             ]
           },
           "kantian_core": {

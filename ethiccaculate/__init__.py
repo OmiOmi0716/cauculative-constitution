@@ -114,9 +114,12 @@ from .formula import (
 )
 from .text_control import (
     ClaimAnalysis,
+    MemoryState,
     TextControlResult,
     analyze_claims,
     estimate_control_from_text,
+    health_score_epsilon,
+    score_a,
 )
 from .text_ethics import (
     QuickEthicsReport,
@@ -308,9 +311,12 @@ __all__ = [
     "run_ethics_pipeline",
     # text control estimation
     "ClaimAnalysis",
+    "MemoryState",
     "TextControlResult",
     "analyze_claims",
     "estimate_control_from_text",
+    "health_score_epsilon",
+    "score_a",
     # text-to-ethics
     "QuickEthicsReport",
     "TextAnalysis",
