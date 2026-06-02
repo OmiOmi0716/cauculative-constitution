@@ -9,6 +9,7 @@ authors = [
 ]
 
 [project.scripts]
+ethiccaculate = "ethiccaculate.__main__:main"
 ethiccaculate-demo = "ethiccaculate.demo:main"
 ethiccaculate-score = "ethiccaculate.scoring:main"
 ethiccaculate-runtime-smoke = "ethiccaculate.runtime_smoke:main"

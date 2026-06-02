@@ -55,7 +55,9 @@ class CoreModelTests(unittest.TestCase):
         self.assertEqual(len(result.states), 3)
         self.assertEqual([move.op for move in result.moves], ["G_REFRAME_JUSTICE", "H_BOUNDARY_SET"])
         self.assertEqual(len(result.replay_bundle["gate_report"]), 3)
-        self.assertEqual(len(result.violations), 4)
+        # ConstructiveHonesty now requires BOTH high distortion AND low Esyn (all, not any).
+        # The whitepaper events have truth_distortion=0 throughout, so only Helpfulness fires.
+        self.assertEqual(len(result.violations), 2)
 
     def test_builtin_profiles_load(self) -> None:
         profiles = load_builtin_moral_system_profiles()

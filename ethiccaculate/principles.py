@@ -153,7 +153,11 @@ def default_principles(system_id: str = "omega_public_reasoning", version: str =
             metadata={"system_version": version},
             violation_rules=[
                 {
-                    "any": [
+                    # "all" (not "any"): both high distortion AND low synchrony must occur
+                    # simultaneously before flagging. Esyn < theta_syn alone is normal for
+                    # most text inputs (up/down BCG components are similar by default), so
+                    # the lone spectral check produces background noise with no signal value.
+                    "all": [
                         {"path": "event.truth_distortion", "gt_threshold": "delta"},
                         {"path": "state.spectral.Esyn", "lt_threshold": "theta_syn"},
                     ],
@@ -361,10 +365,10 @@ def _legacy_check_principle(
     elif "constructivehonesty" in pid:
         delta = principle.thresholds.get("delta", 0.25)
         theta_syn = principle.thresholds.get("theta_syn", 0.15)
-        if event.truth_distortion > delta or state.spectral.Esyn < theta_syn:
+        if event.truth_distortion > delta and state.spectral.Esyn < theta_syn:
             reason = (
-                f"truth_distortion={event.truth_distortion:.4f} or Esyn={state.spectral.Esyn:.4f} "
-                f"fails constructive honesty thresholds."
+                f"truth_distortion={event.truth_distortion:.4f} and Esyn={state.spectral.Esyn:.4f} "
+                f"both fail constructive honesty thresholds."
             )
     elif "helpfulness" in pid:
         min_u = principle.thresholds.get("min_U", 0.0)
