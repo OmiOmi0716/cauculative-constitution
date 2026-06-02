@@ -112,6 +112,12 @@ from .formula import (
     get_formula_reference,
     run_ethics_pipeline,
 )
+from .text_control import (
+    ClaimAnalysis,
+    TextControlResult,
+    analyze_claims,
+    estimate_control_from_text,
+)
 from .text_ethics import (
     QuickEthicsReport,
     TextAnalysis,
@@ -300,6 +306,11 @@ __all__ = [
     "demo_pipeline",
     "get_formula_reference",
     "run_ethics_pipeline",
+    # text control estimation
+    "ClaimAnalysis",
+    "TextControlResult",
+    "analyze_claims",
+    "estimate_control_from_text",
     # text-to-ethics
     "QuickEthicsReport",
     "TextAnalysis",

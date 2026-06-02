@@ -33,6 +33,7 @@ from .spectral import ScalarizerConfig
 from .decoder import DecoderConfig
 from .audit import ObjectiveWeights
 from .control import GateThresholds
+from .text_control import ClaimAnalysis, TextControlResult, analyze_claims, estimate_control_from_text
 
 
 # --- Keyword sets -----------------------------------------------------------
@@ -158,7 +159,7 @@ def _signal_score(
 
 @dataclass
 class TextAnalysis:
-    """Ethical signals extracted from raw text."""
+    """Ethical signals and control axes extracted from raw text."""
     text: str
     token_count: int
     boundary: float         # [0,1] ethical limit-setting strength
@@ -169,6 +170,7 @@ class TextAnalysis:
     harm: float             # [0,1] harm/risk presence
     domain: str             # "medical" | "legal" | "financial" | "general"
     sensitive_context: bool
+    control_result: TextControlResult | None = None   # text-derived 6-axis control
 
     def format_signals(self) -> str:
         def bar(v: float, width: int = 10) -> str:
@@ -185,6 +187,10 @@ class TextAnalysis:
             f"  Evidence  : {self.evidence:.2f}  [{bar(self.evidence)}]  evidence quality",
             f"  Harm      : {self.harm:.2f}  [{bar(self.harm)}]  risk presence",
         ]
+        if self.control_result is not None:
+            lines.append("")
+            lines.append("  Control Axes (text-derived, no vLLM needed):")
+            lines.append(self.control_result.format_axes())
         return "\n".join(lines)
 
 
@@ -218,6 +224,19 @@ class QuickEthicsReport:
         ]
         for role, bcg in self.bcg_profile.items():
             lines.append(f"   {role:<8}  B={bcg.B:.3f}  C={bcg.C:.3f}  G={bcg.G:.3f}")
+        # Claim analysis (NLI-style)
+        cr = self.analysis.control_result
+        if cr is not None:
+            ca = cr.claims
+            lines += [
+                "",
+                " CLAIM ANALYSIS (NLI-style, rule-based)",
+                f"   Sentences: {ca.sentence_count}  Assertions: {ca.assertion_count}  Questions: {ca.question_count}",
+                f"   Evidenced: {ca.evidenced_count}/{max(ca.confident_count,1)} confident claims "
+                f"(support ratio={ca.claim_support_ratio:.2f})",
+                f"   Logical structure: {ca.logical_structure_score:.2f}  Consistency: {ca.consistency_score:.2f}",
+            ]
+
         lines += [
             "",
             " FORMULA PIPELINE",
@@ -263,7 +282,14 @@ class QuickEthicsReport:
 # --- Core functions ----------------------------------------------------------
 
 def analyze_text(text: str) -> TextAnalysis:
-    """Extract ethical signals from text via keyword heuristics."""
+    """
+    Extract ethical signals and text-derived control axes from text.
+
+    Combines:
+      - Keyword-level BCG signal extraction (with negation detection)
+      - Sentence-level control axis estimation (replaces vLLM telemetry fallback)
+      - NLI-style claim support analysis
+    """
     tokens = _tokenize(text)
     n = max(len(tokens), 1)
 
@@ -291,6 +317,9 @@ def analyze_text(text: str) -> TextAnalysis:
 
     sensitive_context = (domain != "general") or (harm > 0.35)
 
+    # Compute text-derived control axes (replaces fallback_control_from_spectral)
+    control_result = estimate_control_from_text(text)
+
     return TextAnalysis(
         text=text,
         token_count=n,
@@ -302,6 +331,7 @@ def analyze_text(text: str) -> TextAnalysis:
         harm=harm,
         domain=domain,
         sensitive_context=sensitive_context,
+        control_result=control_result,
     )
 
 
@@ -383,6 +413,9 @@ def quick_ethics_audit(
         meta={"domain": analysis.domain},
     )
 
+    # Pass text-derived control so write_gate is meaningful without vLLM telemetry
+    text_control = analysis.control_result.control if analysis.control_result else None
+
     pipeline = run_ethics_pipeline(
         bcg_profile=bcg_profile,
         principles=principles,
@@ -391,6 +424,7 @@ def quick_ethics_audit(
         weights=weights,
         gate_thresholds=gate_thresholds,
         event=event,
+        control=text_control,
     )
 
     return QuickEthicsReport(

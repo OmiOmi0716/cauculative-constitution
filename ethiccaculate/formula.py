@@ -277,6 +277,7 @@ def run_ethics_pipeline(
     gate_thresholds: GateThresholds | None = None,
     event: DialogueEvent | None = None,
     noise: float = 0.0,
+    control: ControlState | None = None,
 ) -> FormulaPipelineResult:
     """
     Run the complete ethics formula pipeline from BCG vectors to objective score.
@@ -290,6 +291,8 @@ def run_ethics_pipeline(
         gate_thresholds:  Gate decision thresholds
         event:            DialogueEvent for principle checks (auto-built if None)
         noise:            Enoise added to spectral energy
+        control:          Pre-computed ControlState (e.g. from text_control); if None,
+                          falls back to fallback_control_from_spectral(spectral)
 
     Returns:
         FormulaPipelineResult with every intermediate formula value
@@ -305,7 +308,9 @@ def run_ethics_pipeline(
     spectral = spectral_from_blocks(geom_blocks, cfg_scal, noise=noise)
 
     # Stage 3-5 results come from spectral state
-    control = fallback_control_from_spectral(spectral)
+    # Use provided control (text-derived) or fall back to spectral heuristic
+    if control is None:
+        control = fallback_control_from_spectral(spectral)
 
     # Build a minimal event for principle evaluation if not supplied
     active_event = event if event is not None else DialogueEvent(event_id="formula_eval")
